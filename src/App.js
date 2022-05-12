@@ -18,6 +18,12 @@ function App() {
   const [public_repos, setRepos] = useState("");
   const [avatar_url, setAvatar] = useState("");
 
+
+  const [inputValue, setinputValue] = useState('');
+
+const [chislo, setChislo] = useState(0);
+const [title, setTitle] = useState('');
+
   //https://api.github.com/users/aw/orgs
   //https://api.github.com/search/users?q=aw+repos:%3E2+followers:%3E2
 
@@ -37,10 +43,21 @@ function App() {
  }
 
 
+function inputChange(e){
+    console.log(e.target.value);
+    setinputValue(e.target.value);
+    //setValue(value);
+}
 
 
-  function startSearch() {
-    console.log('Стартуем');
+
+  function handleSubmit(e) {
+
+    e.preventDefault();
+
+    console.log('Стартуем!');
+    console.log(e.target);
+    setTitle(e.target.value);
 
     fetch('https://api.github.com/search/users?q=tom+repos:%3E2+followers:%3E2')//имя tom, 2 репозитория и 2 подписчика
         .then((res) => res.json())
@@ -55,10 +72,14 @@ function App() {
 
           data.items.forEach(element => {
             console.log(i++);
-
           });
 
+          console.log('Число');
+
+          setChislo(data.items.length);
         });
+
+
 
 
         
@@ -81,9 +102,9 @@ function App() {
         
 
         <form name="header-form" className="header__form">
-            <input className="header__input" type="text" onChange="" value="" name="submitForm" required minLength="2" maxLength="40" placeholder="Введите логин" />
+            <input className="header__input" type="text" onChange={inputChange} value={inputValue} name="submitForm" required minLength="2" maxLength="40" placeholder="Введите логин" />
             <span className="header__error" id="submitForm-error">&nbsp;</span>
-            <button type="submit" onClick={startSearch} className="header__button">Найти</button>
+            <button type="submit" onClick={handleSubmit} className="header__button">Найти</button>
         </form>
 
     
@@ -100,17 +121,17 @@ function App() {
                     
                     <div className="sidebar__input-conteiner">
                         <input className="sidebar__input" type="checkbox" id="reposes" name="reposes" checked={reposChecked} onChange={chengeReposCheckbox} />
-                        <label for="reposes">Больше 1 репозитория</label>
+                        <label htmlFor="reposes">Больше 1 репозитория</label>
                     </div>
 
                     <div className="sidebar__input-conteiner">
                         <input className="sidebar__input" type="checkbox" id="followers" name="followers" checked={followerChecked} onChange={chengeFollowerCheckbox} />
-                        <label for="followers">Больше 1 фолловера</label>
+                        <label htmlFor="followers">Больше 1 фолловера</label>
                     </div>
 
                     <div className="sidebar__input-conteiner">
                         <input className="sidebar__input" type="checkbox" id="company" name="company" checked={companyChecked} onChange={chengeCompanyCheckbox} />
-                        <label for="company">Заполнено поле Company</label>
+                        <label htmlFor="company">Заполнено поле Company</label>
                     </div>
 
                 </form>
@@ -120,40 +141,14 @@ function App() {
             <div className="card-conteiner">
                 
 
-                <Card />
-                
-                
-                <div className="card box-shadow-1">
-                    <div className="card__side-content">
-                        <h2>Login</h2>
-                        <img className="card__avatar" src={image} />
-                    </div>
-                    <div className="card__content">11121 11111111111111 1111111111<br/>
-                        1112121111111 11111111111111111<br/>
-                        11121 211111111111111 1111111111<br/>
-                        1112121111111 11111111111111111<br/>
-                        111212111111111111 11111111111111111<br/>
-                        111212111 111111111111111111111<br/>
-                        1112121211111111111111111111 111<br/>
-                        11121211111 1111111111111111111<br/>
-                        11121 2111111111111111111111111<br/></div>
-                </div>
+                <Card chislo = {chislo} title = {title} inputValue = {inputValue}/>
 
-                <div className="card box-shadow-1">
-                    <div className="card__side-content">
-                        <h2>Login</h2>
-                        <img className="card__avatar" src={image} />
-                    </div>
-                    <div className="card__content">11121 11111111111111 1111111111<br/>
-                        1112121111111 11111111111111111<br/>
-                        11121 211111111111111 1111111111<br/>
-                        1112121111111 11111111111111111<br/>
-                        111212111111111111 11111111111111111<br/>
-                        111212111 111111111111111111111<br/>
-                        1112121211111111111111111111 111<br/>
-                        11121211111 1111111111111111111<br/>
-                        11121 2111111111111111111111111<br/></div>
-                </div>
+                <Card chislo = {chislo} title = {title} />
+
+                <Card chislo = {chislo} title = {title} />
+                
+                
+                
 
             </div>
 

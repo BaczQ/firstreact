@@ -1,12 +1,12 @@
 import React from "react";
 import image from '../images/photo.jpg';
 
-const Card = () => {
+const Card = (props) => {
   return (
     
         <div className="card box-shadow-1">
                     <div className="card__side-content">
-                        <h2>Login</h2>
+                        <h2>{props.inputValue} Login {props.chislo}</h2>
                         <img className="card__avatar" src={image} />
                     </div>
                     <div className="card__content">11121 11111111111111 1111111111<br/>
