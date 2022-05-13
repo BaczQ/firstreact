@@ -2,23 +2,38 @@ import React from "react";
 import image from '../images/photo.jpg';
 
 const Card = (props) => {
+
+
   return (
     
+
+
+
+
+
         <div className="card box-shadow-1">
-                    <div className="card__side-content">
-                        <h2>{props.inputValue} Login {props.chislo}</h2>
-                        <img className="card__avatar" src={image} />
+                    <div className="card__top-content">
+                    <h2 className="card__title">{props.id+1+'. '}<a className="card__replink" href={props.arr.url} target="_blank">{props.arr.name}</a></h2>
+                    <span className="card__id">id: {props.arr.id}</span>
                     </div>
-                    <div className="card__content">11121 11111111111111 1111111111<br/>
-                        1112121111111 11111111111111111<br/>
-                        11121 211111111111111 1111111111<br/>
-                        1112121111111 11111111111111111<br/>
-                        111212111111111111 11111111111111111<br/>
-                        111212111 111111111111111111111<br/>
-                        1112121211111111111111111111 111<br/>
-                        11121211111 1111111111111111111<br/>
-                        11121 2111111111111111111111111<br/></div>
-                </div>
+                    <div className="card__bottom-content">
+                    <div className="card__side-content">
+                        
+                        <img className="card__avatar" src={props.arr.userAvatar} />
+                        <p className="card__username"><a className="card__userlink" href={props.arr.userProfileUrl} target="_blank">{props.arr.userLogin}</a></p>
+                    </div>
+                    <div className="card__content">
+                      <h3 className="card__h3">Описание:</h3>
+                      <p className="card__text">{props.arr.description}</p>
+                      <h3 className="card__h3">Языки:</h3>
+                      <p className="card__text">{props.arr.language}</p>
+                      <h3 className="card__h3">Форк:</h3>
+                      <p className="card__text">{props.arr.fork.toString()}</p>
+                      <h3 className="card__h3">Private:</h3>
+                      <p className="card__text">{props.arr.private.toString()}</p>
+                    </div>
+                    </div>
+        </div>
     
   );
 };
