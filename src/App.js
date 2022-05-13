@@ -18,20 +18,24 @@ const [goLangChecked, setGoLangChecked] = useState(false);
 const [pythonLangChecked, setPythonLangChecked] = useState(false);
 
 
-const [arrCards, SetArrCards] = useState({});
-
-const [name, setName] = useState("");
-const [login, setUsername] = useState("");
-const [followers, setFollowers] = useState("");
-const [following, setFollowing] = useState("");
-const [public_repos, setRepos] = useState("");
-const [avatar_url, setAvatar] = useState("");
+const [inputForkValue, setInputForkValue] = useState('');
+const [inputStarsValue, setInputStarsValue] = useState('');
 
 
-const [inputValue, setinputValue] = useState('');
+const [arrCards, SetArrCards] = useState("");
 
-const [chislo, setChislo] = useState(0);
-const [title, setTitle] = useState('');
+
+//const [name, setName] = useState("");
+//const [login, setUsername] = useState("");
+//const [followers, setFollowers] = useState("");
+//const [following, setFollowing] = useState("");
+//const [public_repos, setRepos] = useState("");
+//const [avatar_url, setAvatar] = useState("");
+
+
+const [inputSearchValue, setInputSearchValue] = useState('');
+
+
 
 //https://api.github.com/users/aw/orgs
 //https://api.github.com/search/users?q=aw+repos:%3E2+followers:%3E2
@@ -64,23 +68,25 @@ function chengePythonLangCheckbox(){
     setPythonLangChecked(!pythonLangChecked);
 }
 
-
-function inputChange(e){
-setinputValue(e.target.value);
+function inputSearchChange(e){
+setInputSearchValue(e.target.value);
 }
 
-function twoCards(){
-    i++;
-return (
-<Card chislo={i} title={title} inputValue={inputValue} />
-);
-}
+function inputForkChange(e){
+    setInputForkValue(e.target.value);
+    }
+
+    function inputStarsChange(e){
+        setInputStarsValue(e.target.value);
+        }
+
+
 
 
 function handleSubmit(e) {
 e.preventDefault();
 let api = new Api;
-let apiPromise = api.searchLogin(inputValue);
+let apiPromise = api.searchLogin(inputSearchValue);
 apiPromise.then((data) => {
     processing(data);
 });
@@ -90,10 +96,11 @@ apiPromise.then((data) => {
 
 //получаем массив результатов, обрабатываем их
 function processing(arr){
-    console.log("function processing(arr)");
-
+    
 let myArr = [];
 
+
+//Делаю удобный для себя массив с данными
 arr.forEach((item, i, arr)=>{
     myArr[i] = {
         'userLogin': item.owner.login,
@@ -110,16 +117,9 @@ arr.forEach((item, i, arr)=>{
     //console.log(item.id);
 });
 
-console.log('myArr');
-console.log(myArr);
-
-
     SetArrCards(myArr);
     
 }
-
-
-
 
 return (
 
@@ -132,7 +132,7 @@ return (
                 <h1 className="header__title">Поиск репозиториев</h1>
 
                 <form name="header-form" className="header__form">
-                    <input className="header__input" type="text" onChange={inputChange} value={inputValue}
+                    <input className="header__input" type="text" onChange={inputSearchChange} value={inputSearchValue}
                         name="submitForm" required minLength="2" maxLength="40" placeholder="Найти по логину" />
                     <span className="header__error" id="submitForm-error">&nbsp;</span>
                     <button type="submit" onClick={handleSubmit} className="header__button">Найти</button>
@@ -170,11 +170,11 @@ return (
 </div>
 
 <div className="sidebar__input-conteiner">
-<input className="sidebar__input-number" type="number" min="0" max="100000" step="1" value="" name="forks"/><label htmlFor="forks">Форков</label>
+<input className="sidebar__input-number" type="number" min="0" max="100000" step="1" value="" name="forks" onChange={inputForkChange} value={inputForkValue} /><label htmlFor="forks">Форков</label>
 </div>
 
 <div className="sidebar__input-conteiner">
-<input className="sidebar__input-number" type="number" min="0" max="5" step="1" value="" name="stars"/><label htmlFor="stars">Звёзд</label>
+<input className="sidebar__input-number" type="number" min="0" max="5" step="1" value="" name="stars" onChange={inputStarsChange} value={inputStarsValue}/><label htmlFor="stars">Звёзд</label>
 </div>
 
 <div className="sidebar__input-conteiner">
@@ -193,11 +193,11 @@ return (
                 <div className="card-conteiner">
 
 
-                    {console.log("arrCards")}
-                    {console.log(arrCards[0])}
-                    {console.log()}
+                    {/*console.log("arrCards")*/}
+                    {/*console.log(arrCards[0])*/}
+                    {/*console.log()*/}
 
-                    {(arrCards[0]!=null)&&arrCards.map((item,i)=><Card id={i} arr={item}/>)}
+                    {(arrCards[0]!=null)&&arrCards.map((item,i)=><Card key={i} id={i} arr={item}/>)}
 
                             
                 </div>
