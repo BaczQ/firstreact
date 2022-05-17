@@ -107,7 +107,6 @@ code {
 }
 
 .header__button{
-  
   font-size: 19px;
   font-style: normal;
   font-weight: 400;
@@ -126,6 +125,7 @@ code {
 
 .main {
   max-width: 1100px;
+  min-height: calc(100vh - 250px);
   margin: 0 auto;
   /*background-color: #f09;*/
   padding: 15px 23px;
@@ -293,6 +293,45 @@ code {
   font-weight: 400;
 
 }
+
+
+.card__pagination{
+  background-color: rgb(255, 255, 255);
+  max-width: 100%;
+  margin: 0 auto;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.card__pagination-btn{
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #ff6f32;
+  border-radius: 10px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  max-width: 200px;
+  margin: 0 10px;
+  
+}
+
+.card__under-pagination{
+  font-size: 13px;
+  line-height: 17px;
+  font-weight: 400;
+  padding: 3px 0;
+}
+
 
 .card__h3 {
   padding: 0;

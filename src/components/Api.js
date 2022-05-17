@@ -11,6 +11,12 @@ class Api{
         
     }
 
+    searchReps(searchString){
+        return(fetch(searchString)
+        .then((res) => res.json())
+        );
+    }
+
 }
 
 export default Api;
