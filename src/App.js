@@ -35,6 +35,7 @@ function App() {
     const [selectForksValue, setSelectForksValue] = useState('%3E');
     const [selectStarsValue, setSelectStarsValue] = useState('%3E');
 
+    
     const [results, setResults] = useState(0);
     const [cPage, setCPage] = useState(1);
 
@@ -49,6 +50,9 @@ function App() {
         else {
             setInputIsDisabled(false);
         }
+
+
+        
     });
 
 
@@ -63,8 +67,6 @@ searchString +=(jsLangChecked?"language:javascript+":"");
 searchString +=(goLangChecked?"language:go+":"");
 searchString +=(pythonLangChecked?"language:python+":"");
 searchString +=(isForkChecked?"fork:true":"fork:false");
-
-console.log(searchString);
 
 return searchString;
 
@@ -122,37 +124,19 @@ function selectStarsChange(event){
         setInputStarsValue(e.target.value);
     }
 
-    
-
-
-
     function handleSubmit(e) {
         e.preventDefault();
         let api = new Api;
 
-
         if (inputSearchValue == ''){
-
-            console.log("getSearchString()");
-            console.log(getSearchString());
-
             let apiPromise = api.searchReps(getSearchString());
             apiPromise.then((data) => {
-                console.log(data.items);
-                
                 processing(data.items)});
         }
             
         else {
-            console.log("inputSearchValue");
-            console.log(inputSearchValue);
-
             let apiPromise = api.searchLogin(inputSearchValue);
             apiPromise.then((data) => {
-                
-                console.log("data");
-                console.log(data);
-                
                 processing(data);
             });
         }
@@ -252,14 +236,15 @@ function selectStarsChange(event){
                     </form>
                 </aside>
 
-                
-                
+                             
 
                 <div className="card-conteiner">
                     
-                    <Pagination results={results} cPage={cPage}/>
+                    
 
                      {(arrCards[0]!=null)&&arrCards.map((item,i)=><Card key={i} id={i} arr={item} />)}
+
+                     <Pagination results={results} cPage={cPage}/>
      
                 </div>
             </div>
