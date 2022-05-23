@@ -1,0 +1,10 @@
+.sidebar__input-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 18px;
+  display: flex;
+}
+
+.sidebar__label {
+  min-width: 50%;
+}

@@ -1,24 +1,13 @@
 class Api{
     constructor(){
-
     }
-
-    searchLogin(inputValue){
-
-        return(fetch(`https://api.github.com/users/${inputValue}/repos`)
-        .then((res) => res.json())
-        );
-        
-    }
-
     searchReps(searchString){
-        return(fetch(searchString)
+        return(
+            fetch(searchString)
         .then((res) => res.json())
-        );
+        )
+        .catch(err => alert(err));
     }
-
 }
 
 export default Api;
-
-

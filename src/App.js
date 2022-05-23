@@ -1,262 +1,252 @@
-import {
-    useEffect,
-    useState
-} from "react";
-
-import logo from './images/header__logo.png';
+import {useState} from "react";
+import Header from "./components/Header";
+import Main from "./components/Main";
 import Footer from "./components/Footer";
-import Card from "./components/Card";
 import Api from "./components/Api";
-import Pagination from "./components/Pagination";
+import Processing from "./components/Processing";
 
 function App() {
+  //ПОЛЬЗОВАТЕЛЬСКИЕ ПЕРЕМЕННЫЕ
 
+  //Инпут для Логина:
+  const [login, setLogin] = useState("");
 
-    const [isForkChecked, setIsForkChecked] = useState(true);
-    const [followerChecked, setFollowerChecked] = useState(true);
-    const [companyChecked, setCompanyChecked] = useState(true);
-    const [jsLangChecked, setJsLangChecked] = useState(false);
-    const [goLangChecked, setGoLangChecked] = useState(false);
-    const [pythonLangChecked, setPythonLangChecked] = useState(false);
+  //Значения из сайдбара:
+  const [chkBoxJs, setChkBoxJs] = useState(true);
+  const [chkBoxGo, setChkBoxGo] = useState(true);
+  const [chkBoxPy, setChkBoxPy] = useState(true);
+  const [selectForks, setSelectForks] = useState(">");
+  const [selectStars, setSelectStars] = useState(">");
+  const [forks, setForks] = useState(0);
+  const [stars, setStars] = useState(0);
+  const [isFork, setIsFork] = useState(true);
 
-    const [inputIsDisabled, setInputIsDisabled] = useState(true);
+  //ВСПОМОГАТЕЛЬНЫЕ ПЕРЕМЕННЫЕ
 
-    const [inputForkValue, setInputForkValue] = useState(0);
-    const [inputStarsValue, setInputStarsValue] = useState(0);
+  let api = new Api();
+  let processing = new Processing();
 
+  const [paginationState, setPaginationState] = useState(false);
+  const [dataCards, setDataCards] = useState([]);
 
-    const [arrCards, SetArrCards] = useState("");
+  //Используем для того, чтобы сделать неактивными инпуты сайдбара при поиске по логину
+  const [viewFilters, setViewFilters] = useState(false);
 
-    const [filters, SetFilters] = useState(true);
+  //текущая страница (для пагинации)
+  const [page, setPage] = useState(0);
+  const [results, setResults] = useState(0);
 
+  //Формируем строку для API
+  const [apiString, setApiString] = useState("1");
 
-    const [inputSearchValue, setInputSearchValue] = useState('');
+  //----------------------------------------------------------------
+  //ФУНКЦИИ
+  //----------------------------------------------------------------
 
-    const [selectForksValue, setSelectForksValue] = useState('%3E');
-    const [selectStarsValue, setSelectStarsValue] = useState('%3E');
+  //При изменении логина
+  function onChangeLogin(event) {
+    setLogin(event.target.value);
+    if (event.target.value != "") {
+      setViewFilters(true);
+    } else {
+      setViewFilters(false);
+    }
+  }
 
-    
-    const [results, setResults] = useState(0);
-    const [cPage, setCPage] = useState(1);
+  //Поиск репозиториев по логину
+  function searchSubmit(e) {
+    e.preventDefault();
+    setPaginationState(false);
+    let searchLoginString = getFirstLoginString(login);
+    let apiPromise = api.searchReps(searchLoginString);
 
-    //Изменяем состояние Чекбоксов
-
-    useEffect(() => {
-        //Закрываем панель фильтров
-        if (filters == false) {
-            setInputIsDisabled(true);
-        }
-        //Открывем панель фильтров
-        else {
-            setInputIsDisabled(false);
-        }
-
-
-        
+    apiPromise.then((data) => {
+      setResults(Object.keys(data).length); //обновляю число найденных результатов
+      setPage(1);
+      let arr = processing.createArray(data);
+      setDataCards(arr);
     });
+  }
 
+  //Поиск репозиториев по фильтрам
+  function sidebarSubmit(e) {
+    e.preventDefault();
 
+    if (viewFilters) {
+      setLogin("");
+      setViewFilters(false);
+    } else {
+      //Поиск по фильтрам
+      setPaginationState(true);
+      let tempString = getFirstRepString();
 
-function getSearchString(){
+      setApiString(tempString); //обновляю поисковую строку исходя из значений фильтров
 
-let searchString = "https://api.github.com/search/repositories?q=forks:";
+      let apiPromise = api.searchReps(tempString);
+      apiPromise.then((data) => {
+        setResults(data.total_count); //обновляю число найденных результатов
+        setPage(1);
 
-searchString +=(selectForksValue + inputForkValue+"+");
-searchString +=((inputStarsValue>0)?("stars:" + selectStarsValue + inputStarsValue)+"+":"");
-searchString +=(jsLangChecked?"language:javascript+":"");
-searchString +=(goLangChecked?"language:go+":"");
-searchString +=(pythonLangChecked?"language:python+":"");
-searchString +=(isForkChecked?"fork:true":"fork:false");
-
-return searchString;
-
-}
-
-
-function selectForksChange(event){
-    setSelectForksValue(event.target.value);
-}
-
-function selectStarsChange(event){
-    setSelectStarsValue(event.target.value);
-}
-
-    function chengeIsFork() {
-        setIsForkChecked(!isForkChecked);
-    }
-
-    function chengeFollowerCheckbox() {
-        setFollowerChecked(!followerChecked);
-    }
-
-    function chengeCompanyCheckbox() {
-        setCompanyChecked(!companyChecked);
-    }
-
-    function chengeJsLangCheckbox() {
-        setJsLangChecked(!jsLangChecked);
-    }
-
-    function chengeGoLangCheckbox() {
-        setGoLangChecked(!goLangChecked);
-    }
-
-    function chengePythonLangCheckbox() {
-        setPythonLangChecked(!pythonLangChecked);
-    }
-
-    function inputSearchChange(e) {
-        setInputSearchValue(e.target.value);
-
-        if (e.target.value != '') {
-            SetFilters(false);
+        if (data.total_count > 10) {
+          //если получили данные, которые надо делить на страницы
+          //для этого нам надо отправить первые 10 items в setDataCards(arr)
+          let arr = processing.createArray(data.items.slice(0, 10));
+          setDataCards(arr);
         } else {
-            SetFilters(true);
+          //если получили данные, которые не надо делить на страницы
+          let arr = processing.createArray(data.items);
+          setDataCards(arr);
         }
+      });
     }
+  }
 
-    function inputForkChange(e) {
-        setInputForkValue(e.target.value);
-        setResults(e.target.value);//Удалить
+  //ФУНКЦИИ КНОПОК ПАГИНАЦИИ
+
+  function firstClick() {
+    setPage(1);
+    searchFromPagination();
+  }
+
+  function prevClick() {
+    setPage(page - 1);
+    searchFromPagination();
+  }
+
+  function nextClick() {
+    setPage(page + 1);
+    searchFromPagination();
+  }
+
+  function lastClick() {
+    setPage(Math.ceil(results / 10));
+    searchFromPagination();
+  }
+
+  function searchFromPagination() {
+    let apiPromise = api.searchReps(getRepStringPage());
+    apiPromise.then((data) => {
+      let arr = processing.createArray(data.items);
+      setDataCards(arr);
+    });
+  }
+
+  //СМЕНА СОСТОЯНИЙ ИНПУТОВ В САЙДБАРЕ
+
+  function onChangeChkBoxJs() {
+    setChkBoxJs(!chkBoxJs);
+  }
+
+  function onChangeChkBoxGo() {
+    setChkBoxGo(!chkBoxGo);
+  }
+
+  function onChangeChkBoxPy() {
+    setChkBoxPy(!chkBoxPy);
+  }
+
+  function onChangeSelectForks(event) {
+    if (event.target.value == "=") {
+      setSelectForks("");
+    } else {
+      setSelectForks(event.target.value);
     }
+  }
 
-    function inputStarsChange(e) {
-        setInputStarsValue(e.target.value);
+  function onChangeSelectStars(event) {
+    if (event.target.value == "=") {
+      setSelectStars("");
+    } else {
+      setSelectStars(event.target.value);
     }
+  }
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        let api = new Api;
+  function onChangeForks(event) {
+    setForks(event.target.value);
+  }
 
-        if (inputSearchValue == ''){
-            let apiPromise = api.searchReps(getSearchString());
-            apiPromise.then((data) => {
-                processing(data.items)});
-        }
-            
-        else {
-            let apiPromise = api.searchLogin(inputSearchValue);
-            apiPromise.then((data) => {
-                processing(data);
-            });
-        }
-    }
+  function onChangeStars(event) {
+    setStars(event.target.value);
+  }
 
-    //получаем массив результатов, обрабатываем их
-    function processing(arr) {
-        let myArr = [];
-        //Делаю удобный для себя массив с данными
-        arr.forEach((item, i, arr) => {
-            myArr[i] = {
-                'userLogin': item.owner.login,
-                'userAvatar': item.owner.avatar_url,
-                'userProfileUrl': item.owner.html_url,
-                'id': item.id,
-                'name': item.name,
-                'private': item.private,
-                'description': item.description,
-                'fork': item.fork,
-                'url': item.html_url,
-                'language': item.language
-            };
-            
-        });
+  function onChangeIsFork() {
+    setIsFork(!isFork);
+  }
 
-        SetArrCards(myArr);
+  //Создаём строку для api при поиске по логину
+  function getFirstLoginString(log) {
 
-    }
-//https://api.github.com/search/repositories?q=forks:%3E=1000+language:python+stars:%3E=40+fork:false
+    let searchString = (`https://api.github.com/users/${log}/repos`);
+    return searchString;
+  }
 
-    return (
-        
-    <>
-    <div className="page">
-        <header className="header">
-            <div className="header__wrap">
-                <img className="header__logo" src={logo} />
-                <h1 className="header__title">Поиск репозиториев</h1>
-                <form name="header-form" className="header__form">
-                    <input className="header__input" type="text" onChange={inputSearchChange} value={inputSearchValue}
-                         name="submitForm" required minLength="2" maxLength="40" placeholder="Найти по логину" />
-                    <span className="header__error" id="submitForm-error"></span><button type="submit" onClick={
-                         handleSubmit} className="header__button">Найти</button></form>
-            </div>
-        </header>
-        <main className="main">
-            <div className="main-wrap">
-                <aside className="sidebar box-shadow-1">
-                    <h2 className="sidebar_title">Поиск по фильтрам</h2>
-                    <form name="sidebar-form" className="sidebar__form">
-                         Языки:
-                        <div className="sidebar__input-conteiner">
-                            <input className="sidebar__input" type="checkbox" id="js-lang" name="js-lang" checked={
-                                 jsLangChecked} onChange={chengeJsLangCheckbox} disabled={inputIsDisabled} />
-                            <label htmlFor="company">JS</label></div>
-     
-                        <div className="sidebar__input-conteiner">
-                            <input className="sidebar__input" type="checkbox" id="go-lang" name="go-lang" checked={
-                                 goLangChecked} onChange={chengeGoLangCheckbox} disabled={inputIsDisabled} />
-                            <label htmlFor="company">GO</label></div>
-     
-                        <div className="sidebar__input-conteiner">
-                            <input className="sidebar__input" type="checkbox" id="python-lang" name="python-lang" checked={
-                                 pythonLangChecked} onChange={chengePythonLangCheckbox} disabled={inputIsDisabled} />
-                            <label htmlFor="company">PYTHON</label></div>
-     
-                        <div className="sidebar__input-conteiner">
-     
-                            <select id="selectForks" value={selectForksValue} onChange={selectForksChange}>
-                                <option value='%3E'>более</option>
-                                <option value='<'>менее</option>
-                                <option value=''>равно</option>
-                            </select>
-     
-                            <input disabled={inputIsDisabled} className="sidebar__input-number" type="number" min="0"
-                                 max="100000" step="1" name="forks" onChange={inputForkChange} value={inputForkValue} />
-                            <label htmlFor="forks">Форков</label>
-                        </div>
-     
-                        <div className="sidebar__input-conteiner">
-     
-                            <select id="selectStars"  value={selectStarsValue} onChange={selectStarsChange}>
-                            <option value='%3E'>более</option>
-                                <option value='<'>менее</option>
-                                <option value=''>равно</option>
-                            </select>
-     
-                            <input disabled={inputIsDisabled} className="sidebar__input-number" type="number" min="0"
-                                 max="5" step="1"  name="stars" onChange={inputStarsChange} value={inputStarsValue} />
-                            <label htmlFor="stars">Звёзд</label>
-                        </div>
-                        <div className="sidebar__input-conteiner">
-                            <input disabled={inputIsDisabled} className="sidebar__input" type="checkbox" id="python-lang"
-                                 name="python-lang" checked={isForkChecked} onChange={chengeIsFork} />
-                            <label htmlFor="company">Форк</label>
-                        </div>
-                    </form>
-                </aside>
+  //Создаём строку для api при поиске по фильтрам
+  function getFirstRepString() {
+    let searchString = "https://api.github.com/search/repositories?q=forks:";
 
-                             
+    searchString += selectForks + forks + "+";
+    searchString += stars > 0 ? "stars:" + selectStars + stars + "+" : "";
+    searchString += chkBoxJs ? "language:javascript+" : "";
+    searchString += chkBoxGo ? "language:go+" : "";
+    searchString += chkBoxPy ? "language:python+" : "";
+    searchString += isFork ? "fork:true" : "fork:false";
+    return searchString;
+  }
 
-                <div className="card-conteiner">
-                    
-                    
+  //Создаём строку для api при поиске по фильтрам через Пагинацию
+  function getRepStringPage() {
+    let tempPage = Number(page) + 1;
+    let tempString = apiString + "&per_page=10&page=" + tempPage;
+    return tempString;
+  }
 
-                     {(arrCards[0]!=null)&&arrCards.map((item,i)=><Card key={i} id={i} arr={item} />)}
 
-                     <Pagination results={results} cPage={cPage}/>
-     
-                </div>
-            </div>
-        </main>
-        <Footer />
-     
-     </div>
-    
-    </>
-    
-    );
-            }
 
-            export default App;
-            
+  return ( 
+  
+  <div className = "page" >
+
+    <Header
+      login = {login}
+      onChangeLogin = {onChangeLogin}
+      searchSubmit = {searchSubmit}
+      btnTitle = "Найти"
+    />
+
+    <Main
+      chkBoxJs = {chkBoxJs}
+      chkBoxGo = {chkBoxGo}
+      chkBoxPy = {chkBoxPy}
+      selectForks = {selectForks}
+      selectStars = {selectStars}
+      forks = {forks}
+      stars = {stars}
+      isFork = {isFork}
+      onChangeChkBoxJs = {onChangeChkBoxJs}
+      onChangeChkBoxGo = {onChangeChkBoxGo}
+      onChangeChkBoxPy = {onChangeChkBoxPy}
+      onChangeSelectForks = {onChangeSelectForks}
+      onChangeSelectStars = {onChangeSelectStars}
+      onChangeForks = {onChangeForks}
+      onChangeStars = {onChangeStars}
+      onChangeIsFork = {onChangeIsFork}
+      viewFilters = {viewFilters}
+      sidebarSubmit = {sidebarSubmit}
+      btnTitle = {viewFilters ? "Разблокировать" : "Начать поиск"}
+      dataCards = {dataCards}
+      firstClick = {firstClick}
+      prevClick = {prevClick}
+      nextClick = {nextClick}
+      lastClick = {lastClick}
+      page = {page}
+      results = {results}
+      paginationState = {paginationState}
+    />
+
+    <Footer />
+
+    </div>
+  );
+}
+
+export default App;

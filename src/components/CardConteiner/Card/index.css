@@ -1,0 +1,124 @@
+.card {
+  background-color: rgb(255, 255, 255);
+  max-width: 100%;
+  margin: 0;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card__top-content {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e1e5ec;
+}
+
+.card__title {
+  padding: 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.card__replink {
+  text-decoration: none;
+  color: #000;
+}
+
+.card__replink:hover {
+  color: #ff6f32;
+}
+
+.card__id {
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: right;
+  flex-grow: 1;
+  padding-top: 10px;
+}
+
+.card__bottom-content {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 480px) {
+  .card__bottom-content {
+    flex-direction: column;
+  }
+}
+
+.card__side-content {
+  max-width: 120px;
+  padding: 0;
+  margin: 0 auto;
+  margin-top: 10px;
+  flex-basis: 150px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card__avatar {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 50%;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.card__username {
+  padding: 0;
+  padding-top: 10px;
+  margin: 0 auto;
+}
+
+.card__userlink {
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  color: #000;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.card__userlink:hover {
+  color: #ff6f32;
+}
+
+.card__content {
+  padding: 0;
+  margin: 0;
+  margin-top: 10px;
+  flex-grow: 1;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 400;
+}
+
+.card__h3 {
+  padding: 0;
+  margin: 0;
+  font-size: 17px;
+  line-height: 25px;
+  font-weight: 500;
+}
+
+.card__text {
+  padding: 0;
+  margin: 0;
+  margin-bottom: 10px;
+}

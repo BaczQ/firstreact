@@ -1,0 +1,30 @@
+.header {
+  background-color: #0c73fe;
+  padding: 20px 10px;
+}
+
+.header-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  /*background-color: #fc73fe;*/
+}
+
+.header__logo {
+  display: block;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 150px;
+  margin-bottom: 0;
+  /*background-color: #cc73fe;*/
+}
+
+.header__title {
+  display: block;
+  text-align: center;
+  font-size: 24px;
+  font-weight: normal;
+  padding: 0;
+  margin: 0;
+  color: #fff;
+  /*background-color: #cc73fe;*/
+}
